@@ -39,7 +39,7 @@ const Dashboard = () => {
       const response = await api.get(`/images/folder/${folderId}`);
       setImages(response);
     } catch (error) {
-      toast.error('Failed to fetch images');
+      toast.error('Failed to fetch images ');
     }
   };
 
