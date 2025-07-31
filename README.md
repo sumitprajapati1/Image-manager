@@ -1,4 +1,4 @@
-# 🗂️ Nested Image Folder Manager (Google Drive Clone)
+# 🗂️ Nested Image Folder Manager 
 
 A full-stack web application where users can register, create  folders, upload images into folders, and search their images by name — similar to **Google Drive** functionality. Each user has isolated access to their own folders and uploaded content.
 
