@@ -2,11 +2,18 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import Image from '../models/Image.js';
 import Folder from '../models/Folder.js';
 import auth from '../middleware/auth.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const router = express.Router();
+
+
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -132,26 +139,37 @@ router.post('/upload', auth, upload.single('image'), async (req, res) => {
 
 // Delete image
 router.delete('/:id', auth, async (req, res) => {
+  
   try {
     const image = await Image.findOne({
       _id: req.params.id,
       owner: req.user._id,
     });
 
+
     if (!image) {
       return res.status(404).json({ message: 'Image not found' });
     }
 
     // Delete file from filesystem
-    const filePath = path.join(__dirname, '..', 'uploads', image.filename);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
+    const filePath = path.join(__dirname, '..', '..', 'uploads', image.filename);
 
+    
+    // Use asynchronous file deletion with proper error handling
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+        } 
+      });
+    } 
+
+    // Delete from database
     await Image.findByIdAndDelete(req.params.id);
+
     res.json({ message: 'Image deleted successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting image:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
